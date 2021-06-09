@@ -3,7 +3,6 @@ declare const canvas_height: i32;
 declare const DIV_CLASS: u8;
 declare const N_THREADS: u8;
 
-
 class Complex {
 	real: f64 = 0;
 	imag: f64 = 0;
@@ -13,7 +12,10 @@ class Complex {
     }
 
 	add(cplx: Complex): Complex {
-		return new Complex(this.real + cplx.real, this.imag + cplx.imag);
+        this.real = this.real + cplx.real;
+        this.imag = this.imag + cplx.imag;
+        return this;
+		//return new Complex(this.real + cplx.real, this.imag + cplx.imag);
 	}
 
 	mag(): f64 {
@@ -24,22 +26,35 @@ class Complex {
 	mul(cplx: Complex): Complex {
 		// (a + ib)*(c + id) = (ac - bd) + i(bc + ad)
 		const real_part = this.real*cplx.real - this.imag*cplx.imag;
-		const imag_part = this.imag*cplx.real + this.real*cplx.imag;
-		return new Complex(real_part, imag_part);
+        const imag_part = this.imag*cplx.real + this.real*cplx.imag;
+        this.real = real_part;
+        this.imag = imag_part;
+        return this;
+		//return new Complex(real_part, imag_part);
 	}
 
 	toString(): string {
 		return `r:${this.real},i:${this.imag}`;
-	}
+    }
+
+    set(real:f64,imag:f64): void {
+        this.real = real;
+        this.imag = imag;
+    }
 
 }
 
-const ITER_CONST = 10; 
+const ITER_CONST = 100;
+let z = new Complex(0,0);
+let cplx = new Complex(0,0);
+let in_set: i8 = 0;
 
-function mandelbrot(cplx: Complex):i8{
-  let z: Complex = new Complex(0,0);
+function mandelbrot(real:f64,imag:f64):i8{
+  //let z: Complex = new Complex(0,0);
+  z.set(0,0)
+  cplx.set(real,imag)
   
-  let in_set: i8 = 0;
+  in_set = 0;
   for (let count = 0; z.mag() <= 2; count++) {
     z = (z.mul(z)).add(cplx); // z = z^2 + cplx
     if (count > ITER_CONST) {
@@ -47,7 +62,6 @@ function mandelbrot(cplx: Complex):i8{
       break;
     }
   }
-
   return in_set;
 }
 
@@ -56,17 +70,22 @@ const X_LEN:i32 = canvas_width;
 const Y_LEN:i32 = canvas_height;
 
 
-//export const points_array = new Int8Array(X_LEN*Y_LEN);
-//export const points_array = new Int8Array(memory.data);
-//export const *points_array:Int8Array = 0
 const step_X = 4.0/X_LEN;
 const step_Y = 4.0/Y_LEN;
-for (let x = -2.0, count_x = 0; count_x < X_LEN; x += step_X, count_x++){
-  for (let y = -2.0, count_y = 0; count_y < Y_LEN; y += step_Y, count_y++){
-    const index = count_x*Y_LEN + count_y;
+let index = 0;
+let x = -2.0;
+let count_x =0;
+let y = -2.0;
+let count_y = 0;
+for ( x = -2.0, count_x = 0; count_x < X_LEN; x += step_X, count_x++){
+  for ( y = -2.0, count_y = 0; count_y < Y_LEN; y += step_Y, count_y++){
+    index = count_x*Y_LEN + count_y;
     if(index % N_THREADS == DIV_CLASS) {
-    //points_array[count_x*Y_LEN + count_y] = mandelbrot(new Complex(x,y)); 
-        store<i8>(index, mandelbrot(new Complex(x,y)), 0)
+    store<i8>(index, mandelbrot(x,y), 0)
     }
+
+    //if(index % N_THREADS == DIV_CLASS) {
+    //points_array[count_x*Y_LEN + count_y] = mandelbrot(new Complex(x,y)); 
+    //}
   }
 }

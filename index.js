@@ -47,8 +47,8 @@ WebAssembly
 */
 
 const memory = new WebAssembly.Memory({
-  initial: 100,
-  maximum: 100,
+  initial: 1,
+  maximum: 10,
   shared: true
 });
 
@@ -76,7 +76,7 @@ for (let i =0; i<N_THREADS; i++) {
 }
 
 function draw(arrayptr) {
-    const arr_start = arrayptr + 32
+    const arr_start = arrayptr+1
     console.log(arrayptr)
     const arr_end = arr_start + WIDTH * HEIGHT
     const tempmem = new Uint8Array(memory.buffer)

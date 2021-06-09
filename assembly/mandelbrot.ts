@@ -13,7 +13,10 @@ class Complex {
     }
 
 	add(cplx: Complex): Complex {
-		return new Complex(this.real + cplx.real, this.imag + cplx.imag);
+        this.real = this.real + cplx.real;
+        this.imag = this.imag + cplx.imag;
+        return this;
+		//return new Complex(this.real + cplx.real, this.imag + cplx.imag);
 	}
 
 	mag(): f64 {
@@ -23,9 +26,10 @@ class Complex {
 
 	mul(cplx: Complex): Complex {
 		// (a + ib)*(c + id) = (ac - bd) + i(bc + ad)
-		const real_part = this.real*cplx.real - this.imag*cplx.imag;
-		const imag_part = this.imag*cplx.real + this.real*cplx.imag;
-		return new Complex(real_part, imag_part);
+		this.real = this.real*cplx.real - this.imag*cplx.imag;
+        this.imag = this.imag*cplx.real + this.real*cplx.imag;
+        return this;
+		//return new Complex(real_part, imag_part);
 	}
 
 	toString(): string {
