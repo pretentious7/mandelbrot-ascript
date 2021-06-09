@@ -47,13 +47,13 @@ WebAssembly
 */
 
 const memory = new WebAssembly.Memory({
-  initial: 1,
-  maximum: 10,
+  initial: 20,
+  maximum: 50,
   shared: true
 });
 
 let arrayptr = 0;
-const N_THREADS = 4;
+const N_THREADS = 2;
 let donecount = 0;
 for (let i =0; i<N_THREADS; i++) {
     console.log(i)
@@ -66,17 +66,15 @@ for (let i =0; i<N_THREADS; i++) {
         height: canvas.height
     })
     worker.onmessage = e => {
-        arrayptr = 0
-        console.log(arrayptr)
         donecount++
         if(donecount == N_THREADS) {
-            draw(arrayptr)
+            draw(0)
         }
     }
 }
 
 function draw(arrayptr) {
-    const arr_start = arrayptr+1
+    const arr_start = arrayptr
     console.log(arrayptr)
     const arr_end = arr_start + WIDTH * HEIGHT
     const tempmem = new Uint8Array(memory.buffer)

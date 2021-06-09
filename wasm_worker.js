@@ -16,6 +16,8 @@ onmessage = ({data}) => {
             N_THREADS: n_threads
         }
     }).then(results => {
-        postMessage("done");
+                
+        postMessage("done")
+        //setInterval(()=>postMessage("done"),10000);
     })
 }
