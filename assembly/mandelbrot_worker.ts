@@ -55,11 +55,15 @@ function mandelbrot(cplx: Complex):i8{
 const X_LEN:i32 = canvas_width;
 const Y_LEN:i32 = canvas_height;
 
+
 export const points_array = new Int8Array(X_LEN*Y_LEN);
 const step_X = 4.0/X_LEN;
 const step_Y = 4.0/Y_LEN;
 for (let x = -2.0, count_x = 0; count_x < X_LEN; x += step_X, count_x++){
-  for (let y = -2.0, count_y = DIV_CLASS; count_y < Y_LEN; y += step_Y, count_y+=N_THREADS){
+  for (let y = -2.0, count_y = 0; count_y < Y_LEN; y += step_Y, count_y++){
+    const index = count_x*Y_LEN + count_y;
+    if(index % N_THREADS == DIV_CLASS) {
     points_array[count_x*Y_LEN + count_y] = mandelbrot(new Complex(x,y)); 
+    }
   }
 }
