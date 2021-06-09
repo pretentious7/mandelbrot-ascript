@@ -16,6 +16,6 @@ onmessage = ({data}) => {
             N_THREADS: n_threads
         }
     }).then(results => {
-        postMessage(results.instance.exports.points_array.value);
+        postMessage("done");
     })
 }

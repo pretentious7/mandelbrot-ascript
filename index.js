@@ -47,7 +47,7 @@ WebAssembly
 */
 
 const memory = new WebAssembly.Memory({
-  initial: 50,
+  initial: 100,
   maximum: 100,
   shared: true
 });
@@ -66,7 +66,7 @@ for (let i =0; i<N_THREADS; i++) {
         height: canvas.height
     })
     worker.onmessage = e => {
-        arrayptr = e.data
+        arrayptr = 0
         console.log(arrayptr)
         donecount++
         if(donecount == N_THREADS) {

@@ -34,7 +34,7 @@ class Complex {
 
 }
 
-const ITER_CONST = 100; 
+const ITER_CONST = 10; 
 
 function mandelbrot(cplx: Complex):i8{
   let z: Complex = new Complex(0,0);
@@ -56,14 +56,17 @@ const X_LEN:i32 = canvas_width;
 const Y_LEN:i32 = canvas_height;
 
 
-export const points_array = new Int8Array(X_LEN*Y_LEN);
+//export const points_array = new Int8Array(X_LEN*Y_LEN);
+//export const points_array = new Int8Array(memory.data);
+//export const *points_array:Int8Array = 0
 const step_X = 4.0/X_LEN;
 const step_Y = 4.0/Y_LEN;
 for (let x = -2.0, count_x = 0; count_x < X_LEN; x += step_X, count_x++){
   for (let y = -2.0, count_y = 0; count_y < Y_LEN; y += step_Y, count_y++){
     const index = count_x*Y_LEN + count_y;
     if(index % N_THREADS == DIV_CLASS) {
-    points_array[count_x*Y_LEN + count_y] = mandelbrot(new Complex(x,y)); 
+    //points_array[count_x*Y_LEN + count_y] = mandelbrot(new Complex(x,y)); 
+        store<i8>(index, mandelbrot(new Complex(x,y)), 0)
     }
   }
 }
