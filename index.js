@@ -53,7 +53,7 @@ const memory = new WebAssembly.Memory({
 });
 
 let arrayptr = 0;
-const N_THREADS = 2;
+const N_THREADS = 1;
 let donecount = 0;
 for (let i =0; i<N_THREADS; i++) {
     console.log(i)

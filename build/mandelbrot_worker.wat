@@ -2,8 +2,8 @@
  (type $i32_i32_=>_none (func (param i32 i32)))
  (type $i32_=>_i32 (func (param i32) (result i32)))
  (type $i32_=>_none (func (param i32)))
- (type $none_=>_none (func))
  (type $i32_i32_=>_i32 (func (param i32 i32) (result i32)))
+ (type $none_=>_none (func))
  (type $i32_i32_i32_=>_none (func (param i32 i32 i32)))
  (type $i32_f64_=>_none (func (param i32 f64)))
  (type $i32_i32_i32_i32_=>_none (func (param i32 i32 i32 i32)))
@@ -11,7 +11,7 @@
  (type $none_=>_i32 (func (result i32)))
  (type $i32_f64_f64_=>_none (func (param i32 f64 f64)))
  (type $i32_=>_f64 (func (param i32) (result f64)))
- (type $f64_f64_=>_i32 (func (param f64 f64) (result i32)))
+ (type $f64_f64_i32_i32_=>_i32 (func (param f64 f64 i32 i32) (result i32)))
  (type $i32_f64_f64_=>_i32 (func (param i32 f64 f64) (result i32)))
  (import "env" "memory" (memory $0 (shared 20 50)))
  (data (i32.const 1000012) "<\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
@@ -26,9 +26,7 @@
  (import "mandelbrot_worker" "canvas_width" (global $assembly/mandelbrot_worker/canvas_width i32))
  (import "mandelbrot_worker" "canvas_height" (global $assembly/mandelbrot_worker/canvas_height i32))
  (import "mandelbrot_worker" "N_THREADS" (global $assembly/mandelbrot_worker/N_THREADS i32))
- (import "mandelbrot_worker" "DIV_CLASS" (global $assembly/mandelbrot_worker/DIV_CLASS i32))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $assembly/mandelbrot_worker/ITER_CONST i32 (i32.const 100))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -41,27 +39,13 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/ASC_SHRINK_LEVEL i32 (i32.const 0))
- (global $assembly/mandelbrot_worker/z (mut i32) (i32.const 0))
- (global $assembly/mandelbrot_worker/cplx (mut i32) (i32.const 0))
- (global $assembly/mandelbrot_worker/in_set (mut i32) (i32.const 0))
- (global $assembly/mandelbrot_worker/X_LEN i32 (global.get $assembly/mandelbrot_worker/canvas_width))
- (global $assembly/mandelbrot_worker/Y_LEN i32 (global.get $assembly/mandelbrot_worker/canvas_height))
- (global $assembly/mandelbrot_worker/step_X (mut f64) (f64.const 0))
- (global $assembly/mandelbrot_worker/step_Y (mut f64) (f64.const 0))
- (global $assembly/mandelbrot_worker/index (mut i32) (i32.const 0))
- (global $assembly/mandelbrot_worker/x (mut f64) (f64.const -2))
- (global $assembly/mandelbrot_worker/count_x (mut i32) (i32.const 0))
- (global $assembly/mandelbrot_worker/y (mut f64) (f64.const -2))
- (global $assembly/mandelbrot_worker/count_y (mut i32) (i32.const 0))
- (global $assembly/mandelbrot_worker/segment (mut i32) (i32.const 0))
- (global $assembly/mandelbrot_worker/start_xc (mut i32) (i32.const 0))
- (global $assembly/mandelbrot_worker/start_x (mut f64) (f64.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 1000416))
  (global $~lib/memory/__data_end i32 (i32.const 1000452))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 1016836))
  (global $~lib/memory/__heap_base i32 (i32.const 1016836))
  (table $0 1 funcref)
  (elem $0 (i32.const 1))
+ (export "run_thread" (func $assembly/mandelbrot_worker/run_thread))
  (start $~start)
  (func $assembly/mandelbrot_worker/Complex#set:real (param $0 i32) (param $1 f64)
   local.get $0
@@ -2455,133 +2439,154 @@
   call $assembly/mandelbrot_worker/Complex#set:imag
   local.get $0
  )
- (func $start:assembly/mandelbrot_worker
-  (local $0 i32)
+ (func $assembly/mandelbrot_worker/run_thread (param $0 i32)
   (local $1 i32)
-  memory.size
-  i32.const 16
-  i32.shl
-  global.get $~lib/memory/__heap_base
+  (local $2 i32)
+  (local $3 i32)
+  (local $4 i32)
+  (local $5 f64)
+  (local $6 f64)
+  (local $7 i32)
+  (local $8 f64)
+  (local $9 i32)
+  (local $10 f64)
+  (local $11 i32)
+  (local $12 i32)
+  (local $13 i32)
+  (local $14 f64)
+  (local $15 f64)
+  (local $16 i32)
+  (local $17 i32)
+  (local $18 f64)
+  (local $19 i32)
+  (local $20 i32)
+  global.get $~lib/memory/__stack_pointer
+  i32.const 8
   i32.sub
-  i32.const 1
-  i32.shr_u
-  global.set $~lib/rt/itcms/threshold
-  i32.const 1000144
-  call $~lib/rt/itcms/initLazy
-  global.set $~lib/rt/itcms/pinSpace
-  i32.const 1000176
-  call $~lib/rt/itcms/initLazy
-  global.set $~lib/rt/itcms/toSpace
-  i32.const 1000320
-  call $~lib/rt/itcms/initLazy
-  global.set $~lib/rt/itcms/fromSpace
+  global.set $~lib/memory/__stack_pointer
+  call $~stack_check
+  global.get $~lib/memory/__stack_pointer
+  i64.const 0
+  i64.store
+  global.get $~lib/memory/__stack_pointer
   i32.const 0
   f64.const 0
   f64.const 0
   call $assembly/mandelbrot_worker/Complex#constructor
-  global.set $assembly/mandelbrot_worker/z
+  local.tee $1
+  i32.store
+  global.get $~lib/memory/__stack_pointer
   i32.const 0
   f64.const 0
   f64.const 0
   call $assembly/mandelbrot_worker/Complex#constructor
-  global.set $assembly/mandelbrot_worker/cplx
+  local.tee $2
+  i32.store offset=4
+  global.get $assembly/mandelbrot_worker/canvas_width
+  local.set $3
+  global.get $assembly/mandelbrot_worker/canvas_height
+  local.set $4
   f64.const 4
-  global.get $assembly/mandelbrot_worker/X_LEN
+  local.get $3
   f64.convert_i32_s
   f64.div
-  global.set $assembly/mandelbrot_worker/step_X
+  local.set $5
   f64.const 4
-  global.get $assembly/mandelbrot_worker/Y_LEN
+  local.get $4
   f64.convert_i32_s
   f64.div
-  global.set $assembly/mandelbrot_worker/step_Y
-  global.get $assembly/mandelbrot_worker/X_LEN
+  local.set $6
+  i32.const 0
+  local.set $7
+  f64.const -2
+  local.set $8
+  i32.const 0
+  local.set $9
+  f64.const -2
+  local.set $10
+  i32.const 0
+  local.set $11
+  local.get $3
   global.get $assembly/mandelbrot_worker/N_THREADS
   i32.div_s
-  global.set $assembly/mandelbrot_worker/segment
-  global.get $assembly/mandelbrot_worker/DIV_CLASS
-  global.get $assembly/mandelbrot_worker/segment
+  local.set $12
+  local.get $0
+  i32.const 255
+  i32.and
+  local.get $12
   i32.mul
-  global.set $assembly/mandelbrot_worker/start_xc
+  local.set $13
   f64.const -2
-  global.get $assembly/mandelbrot_worker/start_xc
+  local.get $13
   f64.convert_i32_s
-  global.get $assembly/mandelbrot_worker/step_X
+  local.get $5
   f64.mul
   f64.add
-  global.set $assembly/mandelbrot_worker/start_x
-  global.get $assembly/mandelbrot_worker/start_x
-  global.set $assembly/mandelbrot_worker/x
-  global.get $assembly/mandelbrot_worker/start_xc
-  global.set $assembly/mandelbrot_worker/count_x
+  local.set $14
+  local.get $14
+  local.set $15
+  local.get $13
+  local.set $16
   loop $for-loop|0
-   global.get $assembly/mandelbrot_worker/count_x
-   global.get $assembly/mandelbrot_worker/start_xc
-   global.get $assembly/mandelbrot_worker/segment
+   local.get $16
+   local.get $13
+   local.get $12
    i32.add
    i32.lt_s
-   local.set $0
-   local.get $0
+   local.set $17
+   local.get $17
    if
     f64.const -2
-    global.set $assembly/mandelbrot_worker/y
+    local.set $18
     i32.const 0
-    global.set $assembly/mandelbrot_worker/count_y
+    local.set $19
     loop $for-loop|1
-     global.get $assembly/mandelbrot_worker/count_y
-     global.get $assembly/mandelbrot_worker/Y_LEN
+     local.get $19
+     local.get $4
      i32.lt_s
-     local.set $1
-     local.get $1
+     local.set $20
+     local.get $20
      if
-      global.get $assembly/mandelbrot_worker/count_x
-      global.get $assembly/mandelbrot_worker/Y_LEN
+      local.get $16
+      local.get $4
       i32.mul
-      global.get $assembly/mandelbrot_worker/count_y
+      local.get $19
       i32.add
-      global.get $assembly/mandelbrot_worker/x
-      global.get $assembly/mandelbrot_worker/y
+      local.get $15
+      local.get $18
+      local.get $1
+      local.get $2
       call $assembly/mandelbrot_worker/mandelbrot
       i32.atomic.store8
-      global.get $assembly/mandelbrot_worker/y
-      global.get $assembly/mandelbrot_worker/step_Y
+      local.get $18
+      local.get $6
       f64.add
-      global.set $assembly/mandelbrot_worker/y
-      global.get $assembly/mandelbrot_worker/count_y
+      local.set $18
+      local.get $19
       i32.const 1
       i32.add
-      global.set $assembly/mandelbrot_worker/count_y
+      local.set $19
       br $for-loop|1
      end
     end
-    global.get $assembly/mandelbrot_worker/x
-    global.get $assembly/mandelbrot_worker/step_X
+    local.get $15
+    local.get $5
     f64.add
-    global.set $assembly/mandelbrot_worker/x
-    global.get $assembly/mandelbrot_worker/count_x
+    local.set $15
+    local.get $16
     i32.const 1
     i32.add
-    global.set $assembly/mandelbrot_worker/count_x
+    local.set $16
     br $for-loop|0
    end
   end
+  global.get $~lib/memory/__stack_pointer
+  i32.const 8
+  i32.add
+  global.set $~lib/memory/__stack_pointer
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
-  global.get $assembly/mandelbrot_worker/z
-  local.tee $1
-  if
-   local.get $1
-   local.get $0
-   call $~lib/rt/itcms/__visit
-  end
-  global.get $assembly/mandelbrot_worker/cplx
-  local.tee $1
-  if
-   local.get $1
-   local.get $0
-   call $~lib/rt/itcms/__visit
-  end
   i32.const 1000224
   local.get $0
   call $~lib/rt/itcms/__visit
@@ -2626,7 +2631,23 @@
   unreachable
  )
  (func $~start
-  call $start:assembly/mandelbrot_worker
+  memory.size
+  i32.const 16
+  i32.shl
+  global.get $~lib/memory/__heap_base
+  i32.sub
+  i32.const 1
+  i32.shr_u
+  global.set $~lib/rt/itcms/threshold
+  i32.const 1000144
+  call $~lib/rt/itcms/initLazy
+  global.set $~lib/rt/itcms/pinSpace
+  i32.const 1000176
+  call $~lib/rt/itcms/initLazy
+  global.set $~lib/rt/itcms/toSpace
+  i32.const 1000320
+  call $~lib/rt/itcms/initLazy
+  global.set $~lib/rt/itcms/fromSpace
  )
  (func $~stack_check
   global.get $~lib/memory/__stack_pointer
@@ -2641,106 +2662,78 @@
    unreachable
   end
  )
- (func $assembly/mandelbrot_worker/mandelbrot (param $0 f64) (param $1 f64) (result i32)
-  (local $2 i32)
-  (local $3 i32)
+ (func $assembly/mandelbrot_worker/mandelbrot (param $0 f64) (param $1 f64) (param $2 i32) (param $3 i32) (result i32)
   (local $4 i32)
+  (local $5 i32)
+  (local $6 i32)
+  (local $7 i32)
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 8
   i32.sub
   global.set $~lib/memory/__stack_pointer
   call $~stack_check
   global.get $~lib/memory/__stack_pointer
   i64.const 0
   i64.store
-  global.get $~lib/memory/__stack_pointer
-  i64.const 0
-  i64.store offset=8
-  global.get $assembly/mandelbrot_worker/z
+  i32.const 0
   local.set $4
-  global.get $~lib/memory/__stack_pointer
-  local.get $4
-  i32.store
-  local.get $4
+  local.get $2
   f64.const 0
   f64.const 0
   call $assembly/mandelbrot_worker/Complex#set
-  global.get $assembly/mandelbrot_worker/cplx
-  local.set $4
-  global.get $~lib/memory/__stack_pointer
-  local.get $4
-  i32.store
-  local.get $4
+  local.get $3
   local.get $0
   local.get $1
   call $assembly/mandelbrot_worker/Complex#set
   i32.const 0
-  global.set $assembly/mandelbrot_worker/in_set
+  local.set $4
   i32.const 0
-  local.set $2
+  local.set $5
   block $for-break0
    loop $for-loop|0
-    global.get $assembly/mandelbrot_worker/z
-    local.set $4
-    global.get $~lib/memory/__stack_pointer
-    local.get $4
-    i32.store
-    local.get $4
+    local.get $2
     call $assembly/mandelbrot_worker/Complex#mag
     f64.const 2
     f64.le
-    local.set $3
-    local.get $3
+    local.set $6
+    local.get $6
     if
-     global.get $assembly/mandelbrot_worker/z
-     local.set $4
      global.get $~lib/memory/__stack_pointer
-     local.get $4
-     i32.store offset=8
-     local.get $4
-     global.get $assembly/mandelbrot_worker/z
-     local.set $4
-     global.get $~lib/memory/__stack_pointer
-     local.get $4
-     i32.store offset=12
-     local.get $4
-     call $assembly/mandelbrot_worker/Complex#mul
-     local.set $4
-     global.get $~lib/memory/__stack_pointer
-     local.get $4
-     i32.store
-     local.get $4
-     global.get $assembly/mandelbrot_worker/cplx
-     local.set $4
-     global.get $~lib/memory/__stack_pointer
-     local.get $4
-     i32.store offset=4
-     local.get $4
-     call $assembly/mandelbrot_worker/Complex#add
-     global.set $assembly/mandelbrot_worker/z
      local.get $2
-     global.get $assembly/mandelbrot_worker/ITER_CONST
+     local.get $2
+     call $assembly/mandelbrot_worker/Complex#mul
+     local.set $7
+     global.get $~lib/memory/__stack_pointer
+     local.get $7
+     i32.store
+     local.get $7
+     local.get $3
+     call $assembly/mandelbrot_worker/Complex#add
+     local.tee $2
+     i32.store offset=4
+     local.get $5
+     i32.const 100
      i32.gt_s
      if
       i32.const 1
-      global.set $assembly/mandelbrot_worker/in_set
+      local.set $4
       br $for-break0
      end
-     local.get $2
+     local.get $5
      i32.const 1
      i32.add
-     local.set $2
+     local.set $5
      br $for-loop|0
     end
    end
   end
-  global.get $assembly/mandelbrot_worker/in_set
-  local.set $4
+  local.get $4
+  local.set $7
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $7
  )
  (func $assembly/mandelbrot_worker/Complex#constructor (param $0 i32) (param $1 f64) (param $2 f64) (result i32)
   (local $3 i32)

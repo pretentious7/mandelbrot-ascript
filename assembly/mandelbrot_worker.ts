@@ -10,7 +10,6 @@ class Complex {
 		this.real = real;
 		this.imag = imag;
     }
-
 	add(cplx: Complex): Complex {
         this.real = this.real + cplx.real;
         this.imag = this.imag + cplx.imag;
@@ -44,13 +43,15 @@ class Complex {
 
 }
 
-const ITER_CONST = 100;
-let z = new Complex(0,0);
-let cplx = new Complex(0,0);
-let in_set: i8 = 0;
+//let in_set: i8 = 0
 
-function mandelbrot(real:f64,imag:f64):i8{
+function mandelbrot(real:f64,imag:f64,z:Complex,cplx:Complex):i8{
   //let z: Complex = new Complex(0,0);
+  //let cplx: Complex = new Complex(real, imag);
+  let in_set: i8 = 0;
+  const ITER_CONST = 100;
+
+
   z.set(0,0)
   cplx.set(real,imag)
   
@@ -62,27 +63,35 @@ function mandelbrot(real:f64,imag:f64):i8{
       break;
     }
   }
+
+
   return in_set;
 }
 
+export function run_thread(div_class:u8):void{
+    let z = new Complex(0,0);
+    let cplx = new Complex(0,0);
 
-const X_LEN:i32 = canvas_width;
-const Y_LEN:i32 = canvas_height;
 
-const step_X = 4.0/X_LEN;
-const step_Y = 4.0/Y_LEN;
-let index = 0;
-let x:f64 = -2.0;
-let count_x =0;
-let y:f64 = -2.0;
-let count_y = 0;
-const segment = X_LEN/N_THREADS;
-const start_xc = DIV_CLASS * (segment)
-const start_x = -2.0 + start_xc * step_X
-for ( x = start_x, count_x = start_xc; count_x < start_xc+segment; x += step_X, count_x++){
-  for ( y = -2.0, count_y = 0; count_y < Y_LEN; y += step_Y, count_y++){
+    const X_LEN:i32 = canvas_width;
+    const Y_LEN:i32 = canvas_height;
+    const step_X = 4.0/X_LEN;
+    const step_Y = 4.0/Y_LEN;
+    let index = 0;
+    let x:f64 = -2.0;
+    let count_x =0;
+    let y:f64 = -2.0;
+    let count_y = 0;
+    const segment = X_LEN/N_THREADS;
+
+    const start_xc = div_class * (segment)
+    const start_x = -2.0 + start_xc * step_X
+    for ( let x = start_x, count_x = start_xc; count_x < start_xc+segment; x += step_X, count_x++){
+        for ( let y = -2.0, count_y = 0; count_y < Y_LEN; y += step_Y, count_y++){
     //index = count_x*Y_LEN + count_y;
-    atomic.store<i8>(count_x*Y_LEN + count_y, mandelbrot(x,y), 0);
+            atomic.store<i8>(count_x*Y_LEN + count_y, mandelbrot(x,y,z,cplx), 0);
+
+        }
     //points_array[count_x*Y_LEN + count_y] = mandelbrot(new Complex(x,y)); 
   }
 }

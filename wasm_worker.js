@@ -16,6 +16,7 @@ onmessage = ({data}) => {
             N_THREADS: n_threads
         }
     }).then(results => {
+        results.instance.exports.run_thread(n_worker);
                 
         postMessage("done")
         //setInterval(()=>postMessage("done"),10000);
