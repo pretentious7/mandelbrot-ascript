@@ -47,13 +47,13 @@ WebAssembly
 */
 
 const memory = new WebAssembly.Memory({
-  initial: 1,
-  maximum: 10,
+  initial: 50,
+  maximum: 100,
   shared: true
 });
 
 let arrayptr = 0;
-const N_THREADS = 4;
+const N_THREADS = 1;
 let donecount = 0;
 for (let i =0; i<N_THREADS; i++) {
     console.log(i)

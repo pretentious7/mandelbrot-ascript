@@ -1,2 +1,2 @@
 start:
-	npx asc assembly/mandelbrot_worker.ts -b build/mandelbrot_worker.wasm -t build/mandelbrot_worker.wat --sourceMap --debug --enable threads --maximumMemory 10 --importMemory --noExportMemory --sharedMemory --initialMemory 1 --memoryBase 10000
+	npx asc assembly/mandelbrot_worker.ts -b build/mandelbrot_worker.wasm -t build/mandelbrot_worker.wat --sourceMap --debug --enable threads --maximumMemory 100 --importMemory --noExportMemory --sharedMemory --initialMemory 50 --memoryBase 1000000

@@ -8,7 +8,8 @@ class Complex {
 	imag: f64 = 0;
 	constructor(real:f64, imag:f64){
 		this.real = real;
-		this.imag = imag;
+        this.imag = imag;
+        
     }
 
 	add(cplx: Complex): Complex {
@@ -64,6 +65,7 @@ function mandelbrot(real:f64,imag:f64):i8{
   }
   return in_set;
 }
+
 
 
 const X_LEN:i32 = canvas_width;
