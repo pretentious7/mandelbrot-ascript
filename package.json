@@ -1,5 +1,6 @@
 {
-  "dependencies": {
-    "assemblyscript": "^0.19.1"
+  "dependencies": {},
+  "devDependencies": {
+    "assemblyscript": "^0.19.2"
   }
 }

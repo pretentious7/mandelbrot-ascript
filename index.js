@@ -53,8 +53,9 @@ const memory = new WebAssembly.Memory({
 });
 
 let arrayptr = 0;
-const N_THREADS = 1;
+const N_THREADS = 2;
 let donecount = 0;
+const startTime = performance.now()
 for (let i =0; i<N_THREADS; i++) {
     console.log(i)
     const worker = new Worker("wasm_worker.js")
@@ -68,6 +69,8 @@ for (let i =0; i<N_THREADS; i++) {
     worker.onmessage = e => {
         donecount++
         if(donecount == N_THREADS) {
+            document.getElementById('timing-val').innerText = performance.now()-startTime;
+
             draw(0)
         }
     }
@@ -77,7 +80,7 @@ function draw(arrayptr) {
     const arr_start = arrayptr
     console.log(arrayptr)
     const arr_end = arr_start + WIDTH * HEIGHT
-    const tempmem = new Uint8Array(memory.buffer)
+    const tempmem = new Uint32Array(memory.buffer)
     console.log(tempmem)
     const imageArrayMemory = tempmem.slice(arr_start, arr_end);
     const arr = new Uint8ClampedArray(WIDTH * HEIGHT * 4);
@@ -85,9 +88,7 @@ function draw(arrayptr) {
     arr.fill(0);
     imageArrayMemory.forEach(
         (val, i) => {
-            if (val) {
-                arr[4 * i + 0] = 55; arr[4 * i + 1] = 0; arr[4 * i + 2] = 50; arr[4 * i + 3] = 100;
-            }
+                arr[4 * i + 0] = (val/100)*255; arr[4 * i + 1] = 0; arr[4 * i + 2] = 0; arr[4 * i + 3] = 100;
         });
 
     let imageData = new ImageData(arr, WIDTH, HEIGHT);
