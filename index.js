@@ -47,13 +47,14 @@ WebAssembly
 */
 
 const memory = new WebAssembly.Memory({
-  initial: 20,
-  maximum: 50,
+  initial: 80,
+  maximum: 100,
   shared: true
 });
+//https://mandelbrot.ophir.dev/#{"pos":{"x":-0.743904874255535,"y":-0.1317119067802009
 
 let arrayptr = 0;
-const N_THREADS = 2;
+const N_THREADS = 4;
 let donecount = 0;
 const startTime = performance.now()
 for (let i =0; i<N_THREADS; i++) {
@@ -88,7 +89,7 @@ function draw(arrayptr) {
     arr.fill(0);
     imageArrayMemory.forEach(
         (val, i) => {
-                arr[4 * i + 0] = (val/100)*255; arr[4 * i + 1] = 0; arr[4 * i + 2] = 0; arr[4 * i + 3] = 100;
+                arr[4 * i + 0] = (val/100)*255; arr[4 * i + 1] = 0; arr[4 * i + 2] = 0; arr[4 * i + 3] = 255;
         });
 
     let imageData = new ImageData(arr, WIDTH, HEIGHT);

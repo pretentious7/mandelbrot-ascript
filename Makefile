@@ -1,2 +1,2 @@
 start:
-	npx asc assembly/mandel_final.ts -b build/mandel_final.wasm -t build/mandel_final.wat -O3s --runtime stub --converge --sourceMap --debug --enable simd --enable threads --maximumMemory 50 --importMemory --noExportMemory --sharedMemory --initialMemory 20 --memoryBase 1000000
+	npx asc assembly/mandel_final.ts -b build/mandel_final.wasm -t build/mandel_final.wat -O3z --runtime stub --converge --sourceMap --enable simd --enable threads --maximumMemory 100 --importMemory --noExportMemory --sharedMemory --initialMemory 80 --memoryBase 4000000
