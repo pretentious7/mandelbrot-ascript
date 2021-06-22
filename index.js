@@ -54,7 +54,7 @@ const memory = new WebAssembly.Memory({
 //https://mandelbrot.ophir.dev/#{"pos":{"x":-0.743904874255535,"y":-0.1317119067802009
 
 let arrayptr = 0;
-const N_THREADS = 8;
+const N_THREADS = window.navigator.hardwareConcurrency;
 const workers = new Array(N_THREADS);
 for (let i = 0; i < N_THREADS; i++) {
     workers[i] = new Worker("wasm_worker.js");
